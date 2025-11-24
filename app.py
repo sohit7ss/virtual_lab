@@ -8,10 +8,12 @@ from sklearn.linear_model import LinearRegression
 
 app = Flask(__name__)
 
-# Ensure model exists or create dynamically
+# Ensure model directory exists
+os.makedirs('models', exist_ok=True)
 MODEL_PATH = 'models/ohms_law_model.pkl'
-if not os.path.exists(MODEL_PATH):
-    os.makedirs('models', exist_ok=True)
+
+# Create model if missing
+if not os.path.isfile(MODEL_PATH):
     voltages = np.linspace(1, 100, 100)
     resistances = np.linspace(1, 50, 100)
     X, y = [], []
@@ -24,12 +26,12 @@ if not os.path.exists(MODEL_PATH):
     with open(MODEL_PATH, 'wb') as f:
         pickle.dump(model, f)
 
-# Load the model
+# Load model
 with open(MODEL_PATH, 'rb') as f:
     ohms_model = pickle.load(f)
 
-# API Key for GPT
-API_KEY = os.getenv("API_KEY")  # Use environment variable for security
+# API Key from environment
+API_KEY = os.getenv("API_KEY")
 
 @app.route('/')
 def home():
